@@ -1,0 +1,5 @@
+[paths]
+# All paths can be relative to the project root or absolute paths on your new drive
+
+download_dir = "data/downloads"
+schema_mapping = "config/schema_mapping.json"

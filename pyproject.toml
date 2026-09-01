@@ -1,0 +1,21 @@
+[project]
+name = "prj19"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "medvedku", email = "jakub@rubint.sk" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "pymongo>=4.17.0",
+    "tqdm>=4.70.0",
+]
+
+[project.scripts]
+prj19 = "prj19:main"
+
+[build-system]
+requires = ["uv_build>=0.12.6,<0.13.0"]
+build-backend = "uv_build"
