@@ -13,4 +13,8 @@ data/downloads
 .env
 
 *.ipynb
+!plotter/plotting.ipynb
+
 *.duckdb
+
+*.svg

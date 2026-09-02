@@ -94,6 +94,7 @@ con.execute(
     CREATE TABLE sensors (
         sensor_id INT PRIMARY KEY,
         meta_uuid UBIGINT REFERENCES hubs(meta_uuid),
+        position INT,
         type VARCHAR,
         color VARCHAR,
         probes VARCHAR[],
@@ -110,6 +111,11 @@ for uuid_str, hub_data in schema_mapping.items():
     meta_uuid = int(uuid_str)
     for sensor_id_str, sensor_info in hub_data["sensors"].items():
         sensor_id = int(sensor_id_str)
+        
+        # Parse position as INT (handles blank strings safely)
+        pos_val = sensor_info.get("position")
+        position = int(pos_val) if pos_val is not None and str(pos_val).isdigit() else None
+
         s_type = sensor_info.get("type")
         color = sensor_info.get("color")
         probes = sensor_info.get("probes", [])
@@ -124,6 +130,7 @@ for uuid_str, hub_data in schema_mapping.items():
             (
                 sensor_id,
                 meta_uuid,
+                position,
                 s_type,
                 color,
                 probes,
@@ -139,9 +146,9 @@ sensor_records.sort(key=lambda x: x[0])
 con.executemany(
     """
     INSERT INTO sensors (
-        sensor_id, meta_uuid, type, color, probes, 
+        sensor_id, meta_uuid, position, type, color, probes, 
         tare_pv0, tare_pv1, tare_pv2, tare_pv3
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """,
     sensor_records,
 )
