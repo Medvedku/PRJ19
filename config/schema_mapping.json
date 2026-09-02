@@ -3,66 +3,66 @@
     "SN": 128,
     "Span": 1,
     "sensors": {
-      "6": { "color": "#00FF7F", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38682, "pv1": 0.37382 } },
-      "10": { "color": "#32CD32", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.42675, "pv1": 0.48161 } },
-      "11": { "color": "#2E8B57", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.40697, "pv1": 0.572 } },
-      "17": { "color": "#009E60", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.5927, "pv1": 0.42483 } },
-      "19": { "color": "#16CC62", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47244, "pv1": 0.53715 } },
-      "20": { "color": "#20B2AA", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.78138, "pv1": 0.60063 } },
-      "25": { "color": "#228B22", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38373, "pv1": 0.56182 } },
-      "27": { "color": "#6B8E23", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38132, "pv1": 0.39923 } },
-      "41": { "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.44971, "pv1": 0.50664 } }
+      "6": { "position": "2", "color": "#00FF7F", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38682, "pv1": 0.37382 } },
+      "10": { "position": "1", "color": "#32CD32", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.42675, "pv1": 0.48161 } },
+      "11": { "position": "5", "color": "#2E8B57", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.40697, "pv1": 0.572 } },
+      "17": { "position": "4", "color": "#009E60", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.5927, "pv1": 0.42483 } },
+      "19": { "position": "3", "color": "#16CC62", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47244, "pv1": 0.53715 } },
+      "20": { "position": "6", "color": "#20B2AA", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.78138, "pv1": 0.60063 } },
+      "25": { "position": "8", "color": "#228B22", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38373, "pv1": 0.56182 } },
+      "27": { "position": "7", "color": "#6B8E23", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.38132, "pv1": 0.39923 } },
+      "41": { "position": "0", "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.44971, "pv1": 0.50664 } }
     }
   },
   "44332625541024": {
     "SN": 116,
     "Span": 2,
     "sensors": {
-      "2": { "color": "#4C8FEA", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.49873, "pv1": 0.5371 } },
-      "3": { "color": "#196EE6", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.59053, "pv1": 0.596 } },
-      "15": { "color": "#104C99", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.7206, "pv1": 0.74731 } },
-      "28": { "color": "#7FAFF0", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.53187, "pv1": 0.64533 } },
-      "42": { "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47059, "pv1": 0.5188 } }
+      "2": { "position": "3", "color": "#4C8FEA", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.49873, "pv1": 0.5371 } },
+      "3": { "position": "2", "color": "#196EE6", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.59053, "pv1": 0.596 } },
+      "15": { "position": "1", "color": "#104C99", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.7206, "pv1": 0.74731 } },
+      "28": { "position": "4", "color": "#7FAFF0", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.53187, "pv1": 0.64533 } },
+      "42": { "position": "0", "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47059, "pv1": 0.5188 } }
     }
   },
   "39714511164468": {
     "SN": 115,
     "Span": 3,
     "sensors": {
-      "1": { "color": "#CC4F14", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47385, "pv1": 0.58884 } },
-      "8": { "color": "#FBC49A", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.48428, "pv1": 0.47742 } },
-      "12": { "color": "#99380E", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.61872, "pv1": 0.64395 } },
-      "13": { "color": "#F2783C", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.79971, "pv1": 0.73448 } },
-      "14": { "color": "#E65D19", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.54278, "pv1": 0.51072 } },
-      "23": { "color": "#F8AA73", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.53528, "pv1": 0.45048 } },
-      "26": { "color": "#F5904F", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.52416, "pv1": 0.62974 } },
-      "30": { "color": "#B34311", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.44991, "pv1": 0.55788 } },
-      "43": { "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.37205, "pv1": 0.45508 } }
+      "1": { "position": "3", "color": "#CC4F14", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.47385, "pv1": 0.58884 } },
+      "8": { "position": "8", "color": "#FBC49A", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.48428, "pv1": 0.47742 } },
+      "12": { "position": "1", "color": "#99380E", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.61872, "pv1": 0.64395 } },
+      "13": { "position": "5", "color": "#F2783C", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.79971, "pv1": 0.73448 } },
+      "14": { "position": "4", "color": "#E65D19", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.54278, "pv1": 0.51072 } },
+      "23": { "position": "7", "color": "#F8AA73", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.53528, "pv1": 0.45048 } },
+      "26": { "position": "6", "color": "#F5904F", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.52416, "pv1": 0.62974 } },
+      "30": { "position": "2", "color": "#B34311", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.44991, "pv1": 0.55788 } },
+      "43": { "position": "0", "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.37205, "pv1": 0.45508 } }
     }
   },
   "207137655863200": {
     "SN": 114,
     "Span": 4,
     "sensors": {
-      "4": { "color": "#BE71DB", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.73081, "pv1": 0.8211 } },
-      "22": { "color": "#A44CC0", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.4971, "pv1": 0.67462 } },
-      "24": { "color": "#701F87", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.36324, "pv1": 0.37599 } },
-      "29": { "color": "#57186A", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.56884, "pv1": 0.62288 } },
-      "31": { "color": "", "type": "TLeaf", "probes": ["pv1", "pv2"], "tare": null },
-      "44": { "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.45477, "pv1": 0.49441 } }
+      "4": { "position": "4", "color": "#BE71DB", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.73081, "pv1": 0.8211 } },
+      "22": { "position": "3", "color": "#A44CC0", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.4971, "pv1": 0.67462 } },
+      "24": { "position": "2", "color": "#701F87", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.36324, "pv1": 0.37599 } },
+      "29": { "position": "1", "color": "#57186A", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.56884, "pv1": 0.62288 } },
+      "31": { "position": "10", "color": "", "type": "TLeaf", "probes": ["pv1", "pv2"], "tare": null },
+      "44": { "position": "0", "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.45477, "pv1": 0.49441 } }
     }
   },
   "97186493085600": {
     "SN": 112,
     "Span": 5,
     "sensors": {
-      "5": { "color": "#E46C79", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.57869, "pv1": 0.37833 } },
-      "7": { "color": "#C10422", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.58974, "pv1": 0.4012 } },
-      "9": { "color": "#F09EA6", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.63307, "pv1": 0.58392 } },
-      "16": { "color": "#D73A4D", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.71347, "pv1": 0.34886 } },
-      "18": { "color": "#9E031C", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.64621, "pv1": 0.73217 } },
-      "21": { "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.62587, "pv1": 0.83688 } },
-      "45": { "color": "#7C0216", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.21286, "pv1": 0.29654 } }
+      "5": { "position": "5", "color": "#E46C79", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.57869, "pv1": 0.37833 } },
+      "7": { "position": "3", "color": "#C10422", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.58974, "pv1": 0.4012 } },
+      "9": { "position": "6", "color": "#F09EA6", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.63307, "pv1": 0.58392 } },
+      "16": { "position": "4", "color": "#D73A4D", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.71347, "pv1": 0.34886 } },
+      "18": { "position": "2", "color": "#9E031C", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.64621, "pv1": 0.73217 } },
+      "21": { "position": "0", "color": "", "type": "Ref", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.62587, "pv1": 0.83688 } },
+      "45": { "position": "1", "color": "#7C0216", "type": "DLeaf", "probes": ["pv0", "pv1"], "tare": { "pv0": 0.21286, "pv1": 0.29654 } }
     }
   }
 }
