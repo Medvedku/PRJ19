@@ -12,4 +12,5 @@ data/downloads
 .venv
 .env
 
-test.ipynb
+*.ipynb
+*.duckdb
