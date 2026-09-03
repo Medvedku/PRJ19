@@ -18,3 +18,4 @@ data/downloads
 *.duckdb
 
 *.svg
+*.pdf
