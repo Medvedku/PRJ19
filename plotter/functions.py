@@ -136,6 +136,21 @@ def load_all_tables(con: duckdb.DuckDBPyConnection) -> dict[str, pd.DataFrame]:
     }
 
 
+# def setup_a4_landscape_plot(
+#     width: float = A4_LANDSCAPE_WIDTH,
+#     height: float = A4_LANDSCAPE_HEIGHT,
+#     font_scale: float = 1.1,
+# ) -> tuple[plt.Figure, plt.Axes]:
+#     """Configures a Seaborn/Matplotlib figure sized specifically for full-page A4 landscape print layout."""
+#     # Apply theme globally or outside plot generation
+#     sns.set_theme(style="whitegrid", font_scale=font_scale)
+    
+#     # Explicitly instantiate figure with forward constraints
+#     fig = plt.figure(figsize=(width, height), dpi=300)
+#     ax = fig.add_subplot(1, 1, 1)
+    
+#     return fig, ax
+
 def setup_a4_landscape_plot(
     width: float = A4_LANDSCAPE_WIDTH,
     height: float = A4_LANDSCAPE_HEIGHT,
@@ -150,6 +165,7 @@ def setup_a4_landscape_plot(
     ax = fig.add_subplot(1, 1, 1)
     
     return fig, ax
+
 
 
 def find_span(sensor_id: int, df_hubs: pd.DataFrame) -> int:

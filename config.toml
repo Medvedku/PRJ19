@@ -4,3 +4,5 @@
 download_dir = "data/downloads"
 schema_mapping = "config/schema_mapping.json"
 db_dir = "data/database"
+charts_dir = "charts"
+report_dir = "report_build"
