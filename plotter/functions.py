@@ -3,6 +3,7 @@ import tomllib
 from pathlib import Path
 import duckdb
 from dotenv import load_dotenv
+import urllib.request
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -14,15 +15,75 @@ import seaborn as sns
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # A4 Landscape printable plot area constants (in inches)
-A4_LANDSCAPE_WIDTH = 10.5
-A4_LANDSCAPE_HEIGHT = 6.8
+A4_LANDSCAPE_WIDTH = 24.69
+A4_LANDSCAPE_HEIGHT = 8.27
+
+REPO = "Medvedku/PRJ19"
+
+import json
+import os
+from pathlib import Path
+import tomllib
+import urllib.request
+import duckdb
+from dotenv import load_dotenv
+
+REPO = "Medvedku/PRJ19"
+
+
+def download_db_if_missing(
+    db_path: Path, repo: str = REPO, user_agent: str = "PRJ19-Downloader"
+) -> None:
+    """Downloads the DuckDB database file from the latest repository release if it doesn't exist."""
+    if db_path.exists():
+        return
+
+    print(f"Database not found at '{db_path.resolve()}'. Attempting download...")
+
+    # Ensure target directory exists
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+
+    releases_url = f"https://api.github.com/repos/{repo}/releases"
+    req = urllib.request.Request(
+        releases_url, headers={"User-Agent": user_agent}
+    )
+
+    with urllib.request.urlopen(req) as response:
+        releases = json.loads(response.read().decode())
+
+    if not releases:
+        raise RuntimeError(f"No releases or pre-releases found for '{repo}'.")
+
+    # Find the requested file across releases, starting from the newest
+    download_url = None
+    for release in releases:
+        for asset in release.get("assets", []):
+            if asset.get("name") == db_path.name:
+                download_url = asset.get("browser_download_url")
+                break
+        if download_url:
+            break
+
+    if not download_url:
+        raise FileNotFoundError(
+            f"Asset '{db_path.name}' was not found in any releases for '{repo}'."
+        )
+
+    print(f"Downloading '{db_path.name}' from {download_url}...")
+    urllib.request.urlretrieve(download_url, db_path)
+    print(f"Successfully downloaded database to '{db_path.resolve()}'.")
+
 
 def get_db_connection(
     config_path: str | Path = "config.toml",
     db_name: str = "PRJ-19.duckdb",
     read_only: bool = False,
+    auto_download: bool = True,
 ) -> duckdb.DuckDBPyConnection:
-    """Establishes an encrypted DuckDB connection using environment variables and TOML config."""
+    """Establishes an encrypted DuckDB connection using environment variables and TOML config.
+
+    Downloads the DB asset if missing and auto_download is True.
+    """
     # Resolve .env relative to project root
     load_dotenv(PROJECT_ROOT / ".env")
     db_pass = os.getenv("DB_PASS")
@@ -50,6 +111,10 @@ def get_db_connection(
 
     db_path = db_dir / db_name
 
+    # Download if missing before attempting the connection
+    if auto_download and not db_path.exists():
+        download_db_if_missing(db_path)
+
     if not db_path.exists():
         raise FileNotFoundError(
             f"Database file not found at: {db_path.resolve()}"
@@ -60,6 +125,7 @@ def get_db_connection(
     con.execute("USE db;")
 
     return con
+
 
 
 def load_all_tables(con: duckdb.DuckDBPyConnection) -> dict[str, pd.DataFrame]:
@@ -76,8 +142,13 @@ def setup_a4_landscape_plot(
     font_scale: float = 1.1,
 ) -> tuple[plt.Figure, plt.Axes]:
     """Configures a Seaborn/Matplotlib figure sized specifically for full-page A4 landscape print layout."""
+    # Apply theme globally or outside plot generation
     sns.set_theme(style="whitegrid", font_scale=font_scale)
-    fig, ax = plt.subplots(figsize=(width, height), dpi=300)
+    
+    # Explicitly instantiate figure with forward constraints
+    fig = plt.figure(figsize=(width, height), dpi=300)
+    ax = fig.add_subplot(1, 1, 1)
+    
     return fig, ax
 
 
@@ -126,209 +197,6 @@ def find_ref_sensor(
     return int(ref_sensor_row.iloc[0]["sensor_id"])
 
 
-# def plot_monthly_sensor_data(
-#     measurements_by_span: dict[int, pd.DataFrame],
-#     df_sensors: pd.DataFrame,
-#     df_hubs: pd.DataFrame,
-#     sensor_id: int,
-#     year: int,
-#     month: int,
-#     scale_factor: float = 25.0,
-#     preview: bool = True,
-#     save_plot: bool = False,
-#     output_path: str | None = None,
-# ) -> None:
-#     # 0. Automatically resolve span and select corresponding measurements DataFrame
-#     target_span = find_span(sensor_id, df_hubs)
-#     if target_span not in measurements_by_span:
-#         raise KeyError(
-#             f"Span {target_span} DataFrame not provided in measurements_by_span dictionary."
-#         )
-
-#     df_measurements = measurements_by_span[target_span]
-
-#     # 1. Get main sensor metadata
-#     sensor_row = df_sensors[df_sensors["sensor_id"] == sensor_id]
-#     if sensor_row.empty:
-#         raise ValueError(f"Sensor ID {sensor_id} not found in df_sensors.")
-
-#     sensor_info = sensor_row.iloc[0]
-#     line_color = (
-#         sensor_info["color"]
-#         if pd.notna(sensor_info["color"]) and sensor_info["color"]
-#         else "#df77b4"
-#     )
-#     tare_pv0 = (
-#         sensor_info["tare_pv0"] if pd.notna(sensor_info["tare_pv0"]) else 0.0
-#     )
-#     tare_pv1 = (
-#         sensor_info["tare_pv1"] if pd.notna(sensor_info["tare_pv1"]) else 0.0
-#     )
-
-#     # Fetch reference sensor metadata
-#     ref_sensor_id = find_ref_sensor(sensor_id, df_hubs, df_sensors)
-#     ref_sensor_info = df_sensors[
-#         df_sensors["sensor_id"] == ref_sensor_id
-#     ].iloc[0]
-#     ref_tare_pv0 = (
-#         ref_sensor_info["tare_pv0"]
-#         if pd.notna(ref_sensor_info["tare_pv0"])
-#         else 0.0
-#     )
-#     ref_tare_pv1 = (
-#         ref_sensor_info["tare_pv1"]
-#         if pd.notna(ref_sensor_info["tare_pv1"])
-#         else 0.0
-#     )
-
-#     # 2. Set date boundaries for requested month
-#     start_date = pd.Timestamp(year=year, month=month, day=1)
-#     end_date = (
-#         start_date
-#         + pd.offsets.MonthEnd(1)
-#         + pd.Timedelta(hours=23, minutes=59, seconds=59)
-#     )
-
-#     df_filtered = df_measurements[
-#         (df_measurements["timestamp"] >= start_date)
-#         & (df_measurements["timestamp"] <= end_date)
-#     ].copy()
-
-#     if df_filtered.empty:
-#         print(
-#             f"No data available for Sensor {sensor_id} in {year}-{month:02d} (Span {target_span})."
-#         )
-#         return
-
-#     # 3. Subtract tare and scale for main and reference sensors
-#     df_filtered["pv0_scaled"] = (
-#         df_filtered[f"values_{sensor_id}_pv0"] - tare_pv0
-#     ) * scale_factor
-#     df_filtered["pv1_scaled"] = (
-#         df_filtered[f"values_{sensor_id}_pv1"] - tare_pv1
-#     ) * scale_factor
-
-#     df_filtered["ref_pv0_scaled"] = (
-#         df_filtered[f"values_{ref_sensor_id}_pv0"] - ref_tare_pv0
-#     ) * scale_factor
-#     df_filtered["ref_pv1_scaled"] = (
-#         df_filtered[f"values_{ref_sensor_id}_pv1"] - ref_tare_pv1
-#     ) * scale_factor
-
-#     # 4. Initialize figure
-#     fig, ax = setup_a4_landscape_plot()
-
-#     ax.grid(True, axis="y")
-#     ax.grid(False, axis="x")
-
-#     # 5. Draw plots for main sensor
-#     sns.lineplot(
-#         data=df_filtered,
-#         x="timestamp",
-#         y="pv0_scaled",
-#         ax=ax,
-#         color=line_color,
-#         label=f"S{sensor_id} pv0",
-#         zorder=3,
-#     )
-#     sns.lineplot(
-#         data=df_filtered,
-#         x="timestamp",
-#         y="pv1_scaled",
-#         ax=ax,
-#         color=line_color,
-#         alpha=0.7,
-#         linestyle="-",
-#         label=f"S{sensor_id} pv1",
-#         zorder=3,
-#     )
-
-#     # Draw plots for reference sensor
-#     sns.lineplot(
-#         data=df_filtered,
-#         x="timestamp",
-#         y="ref_pv0_scaled",
-#         ax=ax,
-#         color="#000000",
-#         alpha=0.9,
-#         label=f"Ref (S{ref_sensor_id}) pv0",
-#         zorder=3,
-#     )
-#     sns.lineplot(
-#         data=df_filtered,
-#         x="timestamp",
-#         y="ref_pv1_scaled",
-#         ax=ax,
-#         color="#000000",
-#         alpha=0.7,
-#         linestyle="-",
-#         label=f"Ref (S{ref_sensor_id}) pv1",
-#         zorder=3,
-#     )
-
-#     # 6. Set hard plot limits
-#     ax.set_xlim(start_date, end_date)
-#     ax.set_ylim(-0.25, 0.25)
-
-#     # 7. Set daily ticks and custom label formatter with Slovak day names
-#     ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-
-#     SLOVAK_DAYS = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"]
-
-#     def custom_date_formatter(x, pos=None):
-#         dt = mdates.num2date(x)
-#         day_num = dt.strftime("%d")
-#         if dt.weekday() == 6:  # Sunday
-#             return f"{day_num} {SLOVAK_DAYS[6]}"
-#         return day_num
-
-#     ax.xaxis.set_major_formatter(ticker.FuncFormatter(custom_date_formatter))
-
-#     # 8. Custom vertical gridlines with day-of-week alpha
-#     BASE_COLOR = "#000000"
-#     ALPHA_DAYS = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.80]
-#     ALPHA_DAYS = [a * 0.5 for a in ALPHA_DAYS]
-
-#     all_days = pd.date_range(
-#         start=start_date.floor("D"),
-#         end=end_date.floor("D"),
-#         freq="D",
-#     )
-
-#     for day in all_days:
-#         day_alpha = ALPHA_DAYS[day.weekday()]
-#         ax.axvline(
-#             x=day,
-#             color=BASE_COLOR,
-#             linestyle="-",
-#             linewidth=0.8,
-#             alpha=day_alpha,
-#             zorder=1,
-#         )
-
-#     # 9. Titles and formatting
-#     month_name = start_date.strftime("%B")
-#     ax.set_title(
-#         f"Sensor {sensor_id} & Ref Sensor {ref_sensor_id} - {month_name} {year} Scaled Tared Measurements",
-#         fontsize=16,
-#         pad=14,
-#     )
-#     ax.set_xlabel("")
-#     ax.set_ylabel("Vzdialenosť [mm]", fontsize=12)
-#     plt.xticks(rotation=45, ha="right", fontsize=10)
-
-#     # 10. Handle saving and displaying inside Jupyter Notebook
-#     if save_plot:
-#         filename = (
-#             output_path or f"sensor_{sensor_id}_{year}_{month:02d}_a4.svg"
-#         )
-#         save_a4_svg(fig, filename)
-
-#     if preview:
-#         plt.show()
-#     else:
-#         plt.close(fig)
-
 def plot_monthly_sensor_data(
     measurements_by_span: dict[int, pd.DataFrame],
     df_sensors: pd.DataFrame,
@@ -337,6 +205,8 @@ def plot_monthly_sensor_data(
     year: int,
     month: int,
     scale_factor: float = 25.0,
+    width: float = 10.5,
+    height: float = 7.0,
     preview: bool = True,
     save_plot: bool = False,
     output_path: str | None = None,
@@ -419,8 +289,9 @@ def plot_monthly_sensor_data(
         df_filtered[f"values_{ref_sensor_id}_pv1"] - ref_tare_pv1
     ) * scale_factor
 
-    # 4. Initialize figure
-    fig, ax = setup_a4_landscape_plot()
+    # 4. Initialize Seaborn theme and figure directly
+    sns.set_theme(style="whitegrid", font_scale=1.1)
+    fig, ax = plt.subplots(figsize=(width, height), dpi=300)
 
     ax.grid(True, axis="y")
     ax.grid(False, axis="x")
@@ -538,10 +409,10 @@ def plot_monthly_sensor_data(
     month_name_sk = SLOVAK_MONTHS[month]
 
     ax.set_title(
-            f"Pole {target_span}, Senzor {position} (#{sensor_id})\n{month_name_sk} {year}",
-            fontsize=15,
-            pad=14,
-        )
+        f"Pole {target_span}, Senzor {position} (#{sensor_id})\n{month_name_sk} {year}",
+        fontsize=15,
+        pad=14,
+    )
     ax.set_xlabel("")
     ax.set_ylabel("Vzdialenosť [mm]", fontsize=12)
     plt.xticks(rotation=45, ha="right", fontsize=10)
@@ -549,7 +420,7 @@ def plot_monthly_sensor_data(
     # 10. Handle saving and displaying inside Jupyter Notebook
     if save_plot:
         filename = (
-            output_path or f"sensor_{sensor_id}_{year}_{month:02d}_a4.svg"
+            output_path or f"sensor_{sensor_id}_{year}_{month:02d}.svg"
         )
         save_a4_svg(fig, filename)
 
