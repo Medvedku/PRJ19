@@ -152,17 +152,6 @@ def setup_a4_landscape_plot(
     return fig, ax
 
 
-def save_a4_svg(fig: plt.Figure, filename: str) -> None:
-    """Saves the figure as a high-precision print-ready SVG vector file."""
-    fig.savefig(
-        filename,
-        format="svg",
-        bbox_inches="tight",
-        pad_inches=0.1,
-    )
-    plt.close(fig)
-
-
 def find_span(sensor_id: int, df_hubs: pd.DataFrame) -> int:
     """Finds the span number for a given sensor_id using df_hubs."""
     span_row = df_hubs[
@@ -195,6 +184,12 @@ def find_ref_sensor(
         )
 
     return int(ref_sensor_row.iloc[0]["sensor_id"])
+
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import pandas as pd
+import seaborn as sns
 
 
 def plot_monthly_sensor_data(
@@ -419,8 +414,11 @@ def plot_monthly_sensor_data(
 
     # 10. Handle saving and displaying inside Jupyter Notebook
     if save_plot:
+        # Resolves custom output_path if provided; otherwise falls back to default naming
         filename = (
-            output_path or f"sensor_{sensor_id}_{year}_{month:02d}.svg"
+            output_path
+            if output_path is not None
+            else f"sensor_{sensor_id}_{year}_{month:02d}.svg"
         )
         save_a4_svg(fig, filename)
 
@@ -428,3 +426,14 @@ def plot_monthly_sensor_data(
         plt.show()
     else:
         plt.close(fig)
+
+
+def save_a4_svg(fig: plt.Figure, filename: str) -> None:
+    """Saves the figure as a high-precision print-ready SVG vector file."""
+    fig.savefig(
+        filename,
+        format="svg",
+        bbox_inches="tight",
+        pad_inches=0.1,
+    )
+    plt.close(fig)
