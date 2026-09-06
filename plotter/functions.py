@@ -201,11 +201,252 @@ def find_ref_sensor(
 
     return int(ref_sensor_row.iloc[0]["sensor_id"])
 
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import pandas as pd
-import seaborn as sns
+
+def save_a4_svg(fig: plt.Figure, filename: str) -> None:
+    """Saves the figure as a high-precision print-ready SVG vector file."""
+    fig.savefig(
+        filename,
+        format="svg",
+        bbox_inches="tight",
+        pad_inches=0.1,
+    )
+    plt.close(fig)
+
+
+# def plot_monthly_sensor_data(
+#     measurements_by_span: dict[int, pd.DataFrame],
+#     df_sensors: pd.DataFrame,
+#     df_hubs: pd.DataFrame,
+#     sensor_id: int,
+#     year: int,
+#     month: int,
+#     scale_factor: float = 25.0,
+#     width: float = 10.5,
+#     height: float = 7.0,
+#     preview: bool = True,
+#     save_plot: bool = False,
+#     output_path: str | None = None,
+# ) -> None:
+#     # 0. Automatically resolve span and select corresponding measurements DataFrame
+#     target_span = find_span(sensor_id, df_hubs)
+#     if target_span not in measurements_by_span:
+#         raise KeyError(
+#             f"Span {target_span} DataFrame not provided in measurements_by_span dictionary."
+#         )
+
+#     df_measurements = measurements_by_span[target_span]
+
+#     # 1. Get main sensor metadata
+#     sensor_row = df_sensors[df_sensors["sensor_id"] == sensor_id]
+#     if sensor_row.empty:
+#         raise ValueError(f"Sensor ID {sensor_id} not found in df_sensors.")
+
+#     sensor_info = sensor_row.iloc[0]
+#     position = sensor_info["position"]
+#     line_color = (
+#         sensor_info["color"]
+#         if pd.notna(sensor_info["color"]) and sensor_info["color"]
+#         else "#df77b4"
+#     )
+#     tare_pv0 = (
+#         sensor_info["tare_pv0"] if pd.notna(sensor_info["tare_pv0"]) else 0.0
+#     )
+#     tare_pv1 = (
+#         sensor_info["tare_pv1"] if pd.notna(sensor_info["tare_pv1"]) else 0.0
+#     )
+
+#     # Fetch reference sensor metadata
+#     ref_sensor_id = find_ref_sensor(sensor_id, df_hubs, df_sensors)
+#     ref_sensor_info = df_sensors[
+#         df_sensors["sensor_id"] == ref_sensor_id
+#     ].iloc[0]
+#     ref_tare_pv0 = (
+#         ref_sensor_info["tare_pv0"]
+#         if pd.notna(ref_sensor_info["tare_pv0"])
+#         else 0.0
+#     )
+#     ref_tare_pv1 = (
+#         ref_sensor_info["tare_pv1"]
+#         if pd.notna(ref_sensor_info["tare_pv1"])
+#         else 0.0
+#     )
+
+#     # 2. Set date boundaries for requested month
+#     start_date = pd.Timestamp(year=year, month=month, day=1)
+#     end_date = (
+#         start_date
+#         + pd.offsets.MonthEnd(1)
+#         + pd.Timedelta(hours=23, minutes=59, seconds=59)
+#     )
+
+#     df_filtered = df_measurements[
+#         (df_measurements["timestamp"] >= start_date)
+#         & (df_measurements["timestamp"] <= end_date)
+#     ].copy()
+
+#     if df_filtered.empty:
+#         print(
+#             f"No data available for Sensor {sensor_id} in {year}-{month:02d} (Span {target_span})."
+#         )
+#         return
+
+#     # 3. Subtract tare and scale for main and reference sensors
+#     df_filtered["pv0_scaled"] = (
+#         df_filtered[f"values_{sensor_id}_pv0"] - tare_pv0
+#     ) * scale_factor
+#     df_filtered["pv1_scaled"] = (
+#         df_filtered[f"values_{sensor_id}_pv1"] - tare_pv1
+#     ) * scale_factor
+
+#     df_filtered["ref_pv0_scaled"] = (
+#         df_filtered[f"values_{ref_sensor_id}_pv0"] - ref_tare_pv0
+#     ) * scale_factor
+#     df_filtered["ref_pv1_scaled"] = (
+#         df_filtered[f"values_{ref_sensor_id}_pv1"] - ref_tare_pv1
+#     ) * scale_factor
+
+#     # 4. Initialize Seaborn theme and figure directly
+#     sns.set_theme(style="whitegrid", font_scale=1.1)
+#     fig, ax = plt.subplots(figsize=(width, height), dpi=300)
+
+#     ax.grid(True, axis="y")
+#     ax.grid(False, axis="x")
+
+#     # 5. Draw plots for main sensor
+#     sns.lineplot(
+#         data=df_filtered,
+#         x="timestamp",
+#         y="pv0_scaled",
+#         ax=ax,
+#         color=line_color,
+#         label=f"S_{sensor_id}_pv0",
+#         zorder=3,
+#     )
+#     sns.lineplot(
+#         data=df_filtered,
+#         x="timestamp",
+#         y="pv1_scaled",
+#         ax=ax,
+#         color=line_color,
+#         alpha=0.7,
+#         linestyle="-",
+#         label=f"S_{sensor_id}_pv1",
+#         zorder=3,
+#     )
+
+#     # Draw plots for reference sensor
+#     sns.lineplot(
+#         data=df_filtered,
+#         x="timestamp",
+#         y="ref_pv0_scaled",
+#         ax=ax,
+#         color="#000000",
+#         alpha=0.9,
+#         label=f"Ref_{ref_sensor_id}_pv0",
+#         zorder=3,
+#     )
+#     sns.lineplot(
+#         data=df_filtered,
+#         x="timestamp",
+#         y="ref_pv1_scaled",
+#         ax=ax,
+#         color="#000000",
+#         alpha=0.7,
+#         linestyle="-",
+#         label=f"Ref_{ref_sensor_id}_pv1",
+#         zorder=3,
+#     )
+
+#     # Configure 2-column legend inside the plot window
+#     legend_fontsize = 9
+#     ax.legend(
+#         ncols=2,
+#         fontsize=legend_fontsize,
+#         loc="upper right",
+#         frameon=True,
+#         framealpha=0.8,
+#     )
+
+#     # 6. Set hard plot limits
+#     ax.set_xlim(start_date, end_date)
+#     ax.set_ylim(-0.25, 0.25)
+
+#     # 7. Set daily ticks and custom label formatter with Slovak day names
+#     ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+
+#     SLOVAK_DAYS = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"]
+
+#     def custom_date_formatter(x, pos=None):
+#         dt = mdates.num2date(x)
+#         day_num = dt.strftime("%d")
+#         if dt.weekday() == 6:  # Sunday
+#             return f"{day_num} {SLOVAK_DAYS[6]}"
+#         return day_num
+
+#     ax.xaxis.set_major_formatter(ticker.FuncFormatter(custom_date_formatter))
+
+#     # 8. Custom vertical gridlines with day-of-week alpha
+#     BASE_COLOR = "#000000"
+#     ALPHA_DAYS = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.80]
+#     ALPHA_DAYS = [a * 0.5 for a in ALPHA_DAYS]
+
+#     all_days = pd.date_range(
+#         start=start_date.floor("D"),
+#         end=end_date.floor("D"),
+#         freq="D",
+#     )
+
+#     for day in all_days:
+#         day_alpha = ALPHA_DAYS[day.weekday()]
+#         ax.axvline(
+#             x=day,
+#             color=BASE_COLOR,
+#             linestyle="-",
+#             linewidth=0.8,
+#             alpha=day_alpha,
+#             zorder=1,
+#         )
+
+#     # 9. Titles and formatting
+#     SLOVAK_MONTHS = {
+#         1: "Január",
+#         2: "Február",
+#         3: "Marec",
+#         4: "Apríl",
+#         5: "Máj",
+#         6: "Jún",
+#         7: "Júl",
+#         8: "August",
+#         9: "September",
+#         10: "Október",
+#         11: "November",
+#         12: "December",
+#     }
+#     month_name_sk = SLOVAK_MONTHS[month]
+
+#     ax.set_title(
+#         f"Pole {target_span}, Senzor {position} (#{sensor_id})\n{month_name_sk} {year}",
+#         fontsize=15,
+#         pad=14,
+#     )
+#     ax.set_xlabel("")
+#     ax.set_ylabel("Vzdialenosť [mm]", fontsize=12)
+#     plt.xticks(rotation=45, ha="right", fontsize=10)
+
+#     # 10. Handle saving and displaying inside Jupyter Notebook
+#     if save_plot:
+#         # Resolves custom output_path if provided; otherwise falls back to default naming
+#         filename = (
+#             output_path
+#             if output_path is not None
+#             else f"sensor_{sensor_id}_{year}_{month:02d}.svg"
+#         )
+#         save_a4_svg(fig, filename)
+
+#     if preview:
+#         plt.show()
+#     else:
+#         plt.close(fig)
 
 
 def plot_monthly_sensor_data(
@@ -215,6 +456,8 @@ def plot_monthly_sensor_data(
     sensor_id: int,
     year: int,
     month: int,
+    probes_sensor: list[str] = ["pv0", "pv1"],
+    probes_ref: list[str] = ["pv0", "pv1"],
     scale_factor: float = 25.0,
     width: float = 10.5,
     height: float = 7.0,
@@ -222,6 +465,15 @@ def plot_monthly_sensor_data(
     save_plot: bool = False,
     output_path: str | None = None,
 ) -> None:
+    # Validate probe selection inputs
+    valid_probes = {"pv0", "pv1"}
+    selected_sensor_probes = [
+        p.lower() for p in probes_sensor if p.lower() in valid_probes
+    ]
+    selected_ref_probes = [
+        p.lower() for p in probes_ref if p.lower() in valid_probes
+    ]
+
     # 0. Automatically resolve span and select corresponding measurements DataFrame
     target_span = find_span(sensor_id, df_hubs)
     if target_span not in measurements_by_span:
@@ -243,28 +495,12 @@ def plot_monthly_sensor_data(
         if pd.notna(sensor_info["color"]) and sensor_info["color"]
         else "#df77b4"
     )
-    tare_pv0 = (
-        sensor_info["tare_pv0"] if pd.notna(sensor_info["tare_pv0"]) else 0.0
-    )
-    tare_pv1 = (
-        sensor_info["tare_pv1"] if pd.notna(sensor_info["tare_pv1"]) else 0.0
-    )
 
     # Fetch reference sensor metadata
     ref_sensor_id = find_ref_sensor(sensor_id, df_hubs, df_sensors)
     ref_sensor_info = df_sensors[
         df_sensors["sensor_id"] == ref_sensor_id
     ].iloc[0]
-    ref_tare_pv0 = (
-        ref_sensor_info["tare_pv0"]
-        if pd.notna(ref_sensor_info["tare_pv0"])
-        else 0.0
-    )
-    ref_tare_pv1 = (
-        ref_sensor_info["tare_pv1"]
-        if pd.notna(ref_sensor_info["tare_pv1"])
-        else 0.0
-    )
 
     # 2. Set date boundaries for requested month
     start_date = pd.Timestamp(year=year, month=month, day=1)
@@ -285,74 +521,73 @@ def plot_monthly_sensor_data(
         )
         return
 
-    # 3. Subtract tare and scale for main and reference sensors
-    df_filtered["pv0_scaled"] = (
-        df_filtered[f"values_{sensor_id}_pv0"] - tare_pv0
-    ) * scale_factor
-    df_filtered["pv1_scaled"] = (
-        df_filtered[f"values_{sensor_id}_pv1"] - tare_pv1
-    ) * scale_factor
+    # 3. Calculate tare and scale values independently for primary and reference probes
+    for probe in selected_sensor_probes:
+        tare_key = f"tare_{probe}"
+        tare_val = (
+            sensor_info[tare_key]
+            if pd.notna(sensor_info.get(tare_key))
+            else 0.0
+        )
+        df_filtered[f"{probe}_scaled"] = (
+            df_filtered[f"values_{sensor_id}_{probe}"] - tare_val
+        ) * scale_factor
 
-    df_filtered["ref_pv0_scaled"] = (
-        df_filtered[f"values_{ref_sensor_id}_pv0"] - ref_tare_pv0
-    ) * scale_factor
-    df_filtered["ref_pv1_scaled"] = (
-        df_filtered[f"values_{ref_sensor_id}_pv1"] - ref_tare_pv1
-    ) * scale_factor
+    for probe in selected_ref_probes:
+        ref_tare_key = f"tare_{probe}"
+        ref_tare_val = (
+            ref_sensor_info[ref_tare_key]
+            if pd.notna(ref_sensor_info.get(ref_tare_key))
+            else 0.0
+        )
+        df_filtered[f"ref_{probe}_scaled"] = (
+            df_filtered[f"values_{ref_sensor_id}_{probe}"] - ref_tare_val
+        ) * scale_factor
 
-    # 4. Initialize Seaborn theme and figure directly
+    # 4. Initialize Seaborn theme and figure
     sns.set_theme(style="whitegrid", font_scale=1.1)
     fig, ax = plt.subplots(figsize=(width, height), dpi=300)
 
     ax.grid(True, axis="y")
     ax.grid(False, axis="x")
 
-    # 5. Draw plots for main sensor
-    sns.lineplot(
-        data=df_filtered,
-        x="timestamp",
-        y="pv0_scaled",
-        ax=ax,
-        color=line_color,
-        label=f"S_{sensor_id}_pv0",
-        zorder=3,
-    )
-    sns.lineplot(
-        data=df_filtered,
-        x="timestamp",
-        y="pv1_scaled",
-        ax=ax,
-        color=line_color,
-        alpha=0.7,
-        linestyle="-",
-        label=f"S_{sensor_id}_pv1",
-        zorder=3,
-    )
+    # 5. Draw plots dynamically
+    probe_styles = {
+        "pv0": {"alpha": 1.0, "linestyle": "-"},
+        "pv1": {"alpha": 0.7, "linestyle": "-"},
+    }
 
-    # Draw plots for reference sensor
-    sns.lineplot(
-        data=df_filtered,
-        x="timestamp",
-        y="ref_pv0_scaled",
-        ax=ax,
-        color="#000000",
-        alpha=0.9,
-        label=f"Ref_{ref_sensor_id}_pv0",
-        zorder=3,
-    )
-    sns.lineplot(
-        data=df_filtered,
-        x="timestamp",
-        y="ref_pv1_scaled",
-        ax=ax,
-        color="#000000",
-        alpha=0.7,
-        linestyle="-",
-        label=f"Ref_{ref_sensor_id}_pv1",
-        zorder=3,
-    )
+    # Primary sensor plots
+    for probe in selected_sensor_probes:
+        style = probe_styles[probe]
+        sns.lineplot(
+            data=df_filtered,
+            x="timestamp",
+            y=f"{probe}_scaled",
+            ax=ax,
+            color=line_color,
+            alpha=style["alpha"],
+            linestyle=style["linestyle"],
+            label=f"S_{sensor_id}_{probe}",
+            zorder=3,
+        )
 
-    # Configure 2-column legend inside the plot window
+    # Reference sensor plots
+    for probe in selected_ref_probes:
+        style = probe_styles[probe]
+        sns.lineplot(
+            data=df_filtered,
+            x="timestamp",
+            y=f"ref_{probe}_scaled",
+            ax=ax,
+            color="#000000",
+            alpha=style["alpha"] * 0.9,
+            linestyle=style["linestyle"],
+            label=f"Ref_{ref_sensor_id}_{probe}",
+            zorder=3,
+        )
+
+    # Configure legend inside the plot window
     legend_fontsize = 9
     ax.legend(
         ncols=2,
@@ -430,7 +665,6 @@ def plot_monthly_sensor_data(
 
     # 10. Handle saving and displaying inside Jupyter Notebook
     if save_plot:
-        # Resolves custom output_path if provided; otherwise falls back to default naming
         filename = (
             output_path
             if output_path is not None
@@ -442,14 +676,3 @@ def plot_monthly_sensor_data(
         plt.show()
     else:
         plt.close(fig)
-
-
-def save_a4_svg(fig: plt.Figure, filename: str) -> None:
-    """Saves the figure as a high-precision print-ready SVG vector file."""
-    fig.savefig(
-        filename,
-        format="svg",
-        bbox_inches="tight",
-        pad_inches=0.1,
-    )
-    plt.close(fig)
