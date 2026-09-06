@@ -20,3 +20,8 @@ data/downloads
 *.svg
 *.pdf
 *.jpg
+*.typ
+
+!document.typ
+!report_build/template.typ
+!report_build/Metrotech01.svg
